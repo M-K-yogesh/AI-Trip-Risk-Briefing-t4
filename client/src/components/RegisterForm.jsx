@@ -31,7 +31,11 @@ const RegisterForm = () => {
       
     } catch (err) {
       console.error('Registration error:', err);
-      setError(err.response?.data?.error || 'Failed to register account. Email might be in use.');
+      if (!err.response) {
+        setError('Network Error: Cannot connect to the backend server. Please verify VITE_API_URL or check if the backend is awake.');
+      } else {
+        setError(err.response.data?.error || 'Failed to register account. Email might be in use.');
+      }
     } finally {
       setLoading(false);
     }

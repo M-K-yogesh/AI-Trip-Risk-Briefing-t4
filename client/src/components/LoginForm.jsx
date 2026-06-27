@@ -24,7 +24,11 @@ const LoginForm = () => {
       
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.error || 'Invalid email or password. Please try again.');
+      if (!err.response) {
+        setError('Network Error: Cannot connect to the backend server. Please verify VITE_API_URL or check if the backend is awake.');
+      } else {
+        setError(err.response.data?.error || 'Invalid email or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
