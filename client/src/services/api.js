@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: 'https://ai-trip-risk-briefing-t4.onrender.com/api',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   }
