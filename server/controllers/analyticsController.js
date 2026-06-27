@@ -69,10 +69,10 @@ exports.getAnalytics = async (req, res) => {
         }
       },
       attributes: [
-        [sequelize.fn('DATE_FORMAT', sequelize.col('created_at'), '%Y-%m-%d'), 'date'],
+        [sequelize.fn('to_char', sequelize.col('created_at'), 'YYYY-MM-DD'), 'date'],
         [sequelize.fn('COUNT', sequelize.col('id')), 'count']
       ],
-      group: [sequelize.fn('DATE_FORMAT', sequelize.col('created_at'), '%Y-%m-%d')],
+      group: [sequelize.fn('to_char', sequelize.col('created_at'), 'YYYY-MM-DD')],
       order: [[sequelize.literal('date'), 'ASC']],
       raw: true
     });
