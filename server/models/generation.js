@@ -50,7 +50,7 @@ const Generation = sequelize.define('Generation', {
     allowNull: false
   },
   aiResponse: {
-    type: DataTypes.TEXT('long'),
+    type: DataTypes.TEXT,
     field: 'ai_response',
     allowNull: false
   },

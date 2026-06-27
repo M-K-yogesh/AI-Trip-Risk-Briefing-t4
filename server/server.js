@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const mysql = require('mysql2/promise');
 
 const { sequelize, Template } = require('./models');
 
@@ -47,35 +46,14 @@ const defaultTemplates = [
   { templateName: 'Hyderabad ➔ Mumbai Commercial Corridor', routeFrom: 'Hyderabad', routeTo: 'Mumbai', season: 'Monsoon', vehicleType: 'BharatBenz Sleeper Coach' }
 ];
 
-async function ensureDatabaseExists() {
-  try {
-    const connection = await mysql.createConnection({
-      host: process.env.MYSQL_HOST || '127.0.0.1',
-      port: parseInt(process.env.MYSQL_PORT || '3306', 10),
-      user: process.env.MYSQL_USER || 'root',
-      password: process.env.MYSQL_PASSWORD || ''
-    });
-    
-    const dbName = process.env.MYSQL_DATABASE || 'outstation_trip_risk_db';
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-    await connection.end();
-    console.log(`Successfully verified or created database "${dbName}".`);
-  } catch (err) {
-    console.warn('Database auto-creation check failed (will attempt standard connection anyway):', err.message);
-  }
-}
-
 async function startServer() {
   try {
-    // Dynamically ensure database exists
-    await ensureDatabaseExists();
-
     // Authenticate and sync Sequelize models
-    console.log('Connecting to MySQL Database...');
+    console.log('Connecting to PostgreSQL Database...');
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
 
-    // sync tables
+    // Sync tables (creates/alters tables to match models)
     await sequelize.sync({ alter: true });
     console.log('Database tables successfully synchronized.');
 
@@ -95,12 +73,10 @@ async function startServer() {
 
   } catch (error) {
     console.error('Unable to connect to the database or start server:', error);
-    
-    // In case database connection fails, let the user know but run express in mock database mode (memory array) or exit
-    console.log('Running fallback: The server requires a running MySQL database.');
-    console.log('Please verify your .env settings or MySQL service status.');
-    
-    // Attempt starting the server anyway so the frontend has connection, but DB features will be mock
+    console.log('Running fallback: The server requires a running PostgreSQL database.');
+    console.log('Please verify your DATABASE_URL or PG_* settings.');
+
+    // Start server anyway so health check endpoint is reachable
     app.listen(PORT, () => {
       console.log(`Server started on port ${PORT} (Database offline mode)`);
     });

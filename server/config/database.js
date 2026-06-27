@@ -1,26 +1,48 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize(
-  process.env.MYSQL_DATABASE || 'outstation_trip_risk_db',
-  process.env.MYSQL_USER || 'root',
-  process.env.MYSQL_PASSWORD || '',
-  {
-    host: process.env.MYSQL_HOST || '127.0.0.1',
-    port: process.env.MYSQL_PORT || 3306,
-    dialect: 'mysql',
-    logging: false, // Set to console.log to debug SQL queries
+// Support both a full DATABASE_URL (Render PostgreSQL) or individual env vars
+const connectionString = process.env.DATABASE_URL;
+
+let sequelize;
+
+if (connectionString) {
+  sequelize = new Sequelize(connectionString, {
+    dialect: 'postgres',
+    logging: false,
     define: {
       timestamps: true,
-      underscored: true, // Use snake_case for column names in the DB
+      underscored: true,
     },
     dialectOptions: {
-      // For Cloud MySQL connections like PlanetScale/Railway (if SSL is required)
-      ssl: process.env.MYSQL_SSL === 'true' ? {
+      ssl: {
+        require: true,
         rejectUnauthorized: false
-      } : false
+      }
     }
-  }
-);
+  });
+} else {
+  sequelize = new Sequelize(
+    process.env.PG_DATABASE || 'trip_risk_db',
+    process.env.PG_USER || 'postgres',
+    process.env.PG_PASSWORD || '',
+    {
+      host: process.env.PG_HOST || '127.0.0.1',
+      port: parseInt(process.env.PG_PORT || '5432', 10),
+      dialect: 'postgres',
+      logging: false,
+      define: {
+        timestamps: true,
+        underscored: true,
+      },
+      dialectOptions: {
+        ssl: process.env.PG_SSL === 'true' ? {
+          require: true,
+          rejectUnauthorized: false
+        } : false
+      }
+    }
+  );
+}
 
 module.exports = sequelize;

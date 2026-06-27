@@ -8,11 +8,11 @@ const User = sequelize.define('User', {
     autoIncrement: true
   },
   name: {
-    type: DataTypes.VARCHAR || DataTypes.STRING,
+    type: DataTypes.STRING,
     allowNull: false
   },
   email: {
-    type: DataTypes.VARCHAR || DataTypes.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
     unique: true,
     validate: {
@@ -20,7 +20,7 @@ const User = sequelize.define('User', {
     }
   },
   password: {
-    type: DataTypes.VARCHAR || DataTypes.STRING,
+    type: DataTypes.STRING,
     allowNull: false
   }
 }, {
